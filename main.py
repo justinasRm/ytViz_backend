@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Query
 from fastapi.responses import JSONResponse
 import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
@@ -14,18 +14,27 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-@app.get("/graph")
-def get_graph_data():
-     # for testing data is pre generated. Maybe there will be 5 presets of data that user can choose from, or input their own videos.
+# @app.get("/graph")
+# def get_graph_data():
+#      # for testing data is pre generated. Maybe there will be 5 presets of data that user can choose from, or input their own videos.
 
-    # 1. Read data from CSV files
-    video_ids, user_to_videos = read_data()
+#     # 1. Read data from CSV files
+#     video_ids, user_to_videos = read_data()
 
-    # 2. Build the JSON structure for the graph
+#     # 2. Build the JSON structure for the graph
+#     graph_json = build_graph_json(video_ids, user_to_videos)
+#     # 3. Return as JSON
+#     return JSONResponse(content=graph_json)
+
+@app.get("/default-graphs")
+def get_default_graphs(graph_num: int = Query(..., description="# of graph to retrieve")):
+    '''
+    Returns the default data that's generated to see the functionality.
+    '''
+    video_ids, user_to_videos = read_data(graph_num)
     graph_json = build_graph_json(video_ids, user_to_videos)
-    # 3. Return as JSON
     return JSONResponse(content=graph_json)
-
 
 if __name__ == "__main__":
     uvicorn.run("main:app", reload=True)
+

@@ -1,15 +1,16 @@
 import csv
 import json
+from typing import Optional
 
-def export_videos_csv(video_ids):
+def export_videos_csv(video_ids: list[str], postfix: Optional[str] = ""):
     """
-    Creates 'videos.csv' file, adds pre-defined data(update this file if the paramaters comming in change).
+    Creates 'videos{postfix}.csv' file, adds pre-defined data(update this file if the paramaters comming in change).
     """
 
     # video_ids
     # "{'video_id': '45PMCchaO_M', 'title': 'Asking Our Dads For Advice | Short & Simple', 'thumbnail_link': 'https://i.ytimg.com/vi/45PMCchaO_M/maxresdefault.jpg', 'channel_title': 'Short & Simple', 'view_count': '15036', 'like_count': '1473', 'comment_count': '232'}"
 
-    with open("videos.csv", "w", newline="", encoding="utf-8") as f:
+    with open(f"videos{postfix}.csv", "w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
         writer.writerow(["video_id", "title", "thumbnail_link", "channel_title", "view_count", "like_count", "comment_count"])
         for video in video_ids:
@@ -22,11 +23,11 @@ def export_videos_csv(video_ids):
             comment_count = video.get("comment_count")
             writer.writerow([video_id, title, thumbnail_link, channel_title, view_count, like_count, comment_count])
 
-def export_users_csv(user_to_videos):
+def export_users_csv(user_to_videos, postfix: Optional[str] = ""):
     """
-    Creates 'users.csv' file.
+    Creates 'users{postfix}.csv' file.
     """
-    with open("users.csv", "w", newline="", encoding="utf-8") as f:
+    with open(f"users{postfix}.csv", "w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
         writer.writerow(["user_id", "videos_json", "channel_title", "thumbnail_link", "view_count", "subscriber_count", "video_count"])
 

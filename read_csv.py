@@ -1,7 +1,8 @@
 import csv
 import json
+from typing import Optional
 
-def read_data():
+def read_data(postfix: str):
     """
     Reads 'videos.csv' and 'users.csv' from project
     and returns:
@@ -16,13 +17,14 @@ def read_data():
             }
     """
     video_data = []
-    with open('videos.csv', 'r', encoding='utf-8') as f:
-        reader = csv.DictReader(f)  # Automatically uses the first row as headers
+    with open(f'videos{postfix}.csv', 'r', encoding='utf-8') as f:
+        reader = csv.DictReader(f)
+        
         for row in reader:
             video_data.append(row)
 
     user_to_videos = []
-    with open('users.csv', 'r', encoding='utf-8') as f:
+    with open(f'users{postfix}.csv', 'r', encoding='utf-8') as f:
         reader = csv.DictReader(f)
         for row in reader:
             if 'videos_json' in row:

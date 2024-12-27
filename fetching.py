@@ -2,12 +2,16 @@ from config import get_youtube_client
 from export_csv import export_videos_csv, export_users_csv
 from typing import List, Dict, Optional, TypedDict, Any
 
-# List of videos to analyze
-video_ids: List[str] = ["45PMCchaO_M", "6PQQUsJuFBU", "dHHB7k5aWRk", "1mk0By1xf8M", "spUTRgDHq_o"]
-# video_ids: List[str] = ["Qjr1eduaPmI", "XKyoC5dNib8", "2gWaJKxzkV8","pkbdjfxZAlI", "OsOoxHSRzcM", "RfMpyS6g_Fk"]
-# my vids
+# Random vids
+# video_ids: List[str] = ["45PMCchaO_M", "6PQQUsJuFBU", "dHHB7k5aWRk", "1mk0By1xf8M", "spUTRgDHq_o"]
 
-def fetch_comments_for_videos(video_ids):
+# NeetCode videos
+# video_ids: List[str] = ["VHZDxOmRthE", "QHXET1G9Y5U", "IcxM8G1odzg", "el0YrkT-NPA"]
+
+# Yung Lean videos
+video_ids: List[str] = ["X1A0maG9k7M", "iQPq68mP-t8", "vYdmrLYftlI", "tMgkt9jdjTU", "KOFw2UPLdPk"]
+
+def fetch_comments_for_videos(video_ids: list[str]) -> Dict[str, List[Dict[str, Any]]]:
     """
     Fetch up to 1000 comments (10 pages x 100 each) per video_id.
     Returns a dict of:
@@ -85,7 +89,6 @@ def build_inverted_index(video_to_commenters):
       ]
     """
     user_to_videos = {}
-    # { "user_id": [ { "video_id": "xyz", "like_count": 123 }, ... ] }
 
     for vid, commenters in video_to_commenters.items():
         for commenter_data in commenters:
@@ -242,6 +245,7 @@ def add_user_metadata(user_to_videos):
     return user_to_videos_full
 
 if __name__ == "__main__":
+
     print("Starting comment fetch...")
     video_to_commenters = fetch_comments_for_videos(video_ids)
     print("Fetch complete!\n")
@@ -254,6 +258,6 @@ if __name__ == "__main__":
     user_to_videos_full = add_user_metadata(user_to_videos)
 
     print("Exporting to CSV...")
-    export_videos_csv(video_ids_full)
-    export_users_csv(user_to_videos_full)
+    export_videos_csv(video_ids_full, 3)
+    export_users_csv(user_to_videos_full, 3)
     print("Done! Check 'videos.csv' and 'users.csv'.")
