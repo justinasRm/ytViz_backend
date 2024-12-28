@@ -3,13 +3,16 @@ from export_csv import export_videos_csv, export_users_csv
 from typing import List, Dict, Optional, TypedDict, Any
 
 # Random vids
-# video_ids: List[str] = ["45PMCchaO_M", "6PQQUsJuFBU", "dHHB7k5aWRk", "1mk0By1xf8M", "spUTRgDHq_o"]
+video_ids: List[str] = ["45PMCchaO_M", "6PQQUsJuFBU", "dHHB7k5aWRk", "1mk0By1xf8M", "spUTRgDHq_o"]
 
 # NeetCode videos
 # video_ids: List[str] = ["VHZDxOmRthE", "QHXET1G9Y5U", "IcxM8G1odzg", "el0YrkT-NPA"]
 
 # Yung Lean videos
-video_ids: List[str] = ["X1A0maG9k7M", "iQPq68mP-t8", "vYdmrLYftlI", "tMgkt9jdjTU", "KOFw2UPLdPk"]
+# video_ids: List[str] = ["X1A0maG9k7M", "iQPq68mP-t8", "vYdmrLYftlI", "tMgkt9jdjTU", "KOFw2UPLdPk"]
+
+# mrbeast videos
+# video_ids: List[str] = ["gs8qfL9PNac", "0BjlBnfHcHM", "Xj0Jtjg3lHQ", "bn0Kh9c4Zv4", "snX5YyflrGw"]
 
 def fetch_comments_for_videos(video_ids: list[str]) -> Dict[str, List[Dict[str, Any]]]:
     """
@@ -258,6 +261,6 @@ if __name__ == "__main__":
     user_to_videos_full = add_user_metadata(user_to_videos)
 
     print("Exporting to CSV...")
-    export_videos_csv(video_ids_full, 3)
-    export_users_csv(user_to_videos_full, 3)
+    export_videos_csv(video_ids_full, 4)
+    export_users_csv(user_to_videos_full, 4)
     print("Done! Check 'videos.csv' and 'users.csv'.")
