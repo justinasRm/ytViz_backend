@@ -1,6 +1,7 @@
 from config import get_youtube_client
 from export_csv import export_videos_csv, export_users_csv
 from typing import List, Dict, Optional, TypedDict, Any
+from itertools import islice
 
 # Random vids
 video_ids: List[str] = ["45PMCchaO_M", "6PQQUsJuFBU", "dHHB7k5aWRk", "1mk0By1xf8M", "spUTRgDHq_o"]
@@ -14,9 +15,9 @@ video_ids: List[str] = ["45PMCchaO_M", "6PQQUsJuFBU", "dHHB7k5aWRk", "1mk0By1xf8
 # mrbeast videos
 # video_ids: List[str] = ["gs8qfL9PNac", "0BjlBnfHcHM", "Xj0Jtjg3lHQ", "bn0Kh9c4Zv4", "snX5YyflrGw"]
 
-def fetch_comments_for_videos(video_ids: list[str]) -> Dict[str, List[Dict[str, Any]]]:
+def fetch_comments_for_videos(video_ids: list[str], commentCount: int = 500) -> Dict[str, List[Dict[str, Any]]]:
     """
-    Fetch up to 1000 comments (10 pages x 100 each) per video_id.
+    Fetch up to {commentCount} comments per video_id.
     Returns a dict of:
       {
         "VIDEO_ID": [
@@ -35,7 +36,7 @@ def fetch_comments_for_videos(video_ids: list[str]) -> Dict[str, List[Dict[str, 
         page_token = None
 
         try:
-            for _ in range(10):
+            for _ in range(commentCount // 100):
                 response = youtube.commentThreads().list(
                     part="snippet",
                     videoId=vid,
@@ -170,8 +171,6 @@ def add_video_metadata(video_ids):
             })
 
     return video_ids_full
-
-from itertools import islice
 
 def batch(iterable, size):
     """Yield successive n-sized chunks from an iterable."""
