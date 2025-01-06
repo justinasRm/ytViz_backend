@@ -38,8 +38,12 @@ def get_default_graphs(graph_num: int = Query(..., description="# of graph to re
 
 @app.get("/make-video-graphs")
 def func(links: str = Query(..., description="youtube video links"), commentCount: int = Query(..., description="Number of comments to fetch for each video")):
-    return make_video_graphs(links, commentCount)
-
+    try:
+        return make_video_graphs(links, commentCount)
+    except Exception as e:
+        if 'raised_error_text:' in str(e):
+            return JSONResponse(content={"error": str(e).split('raised_error_text:')[1]}, status_code=400)
+        return JSONResponse(content={"error": "An error occurred. Please try again."}, status_code=400)
 
 if __name__ == "__main__":
     uvicorn.run("main:app", reload=True)

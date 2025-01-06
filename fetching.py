@@ -78,6 +78,9 @@ def fetch_comments_for_videos(video_ids: list[str], commentCount: int = 500) -> 
 
         except Exception as e:
             print(f"Unexpected error fetching comments for video {vid}: {e}")
+            if "disabled comments" in str(e):
+                raise Exception(f"raised_error_text: Comments dissabled for video youtube.com/watch?v={vid}<strong>(marked above)</strong>. Possible reasons:\n1. Comments are disabled by the uploader.\n2. Comments are restricted due to content moderation.\n3. This video has API restrictions(comments could still be visible on youtube.com/watch?v={vid}).\n\nTry again without this video.") from e
+
             raise  # Rethrow unexpected errors
 
         video_to_commenters[vid] = all_commenters

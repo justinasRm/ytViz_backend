@@ -28,7 +28,6 @@ def make_video_graphs(links: str, commentCount: int):
 
     print("Starting comment fetch...")
     video_to_commenters = fetch_comments_for_videos(idsList, commentCount)
-    print("Fetch complete!\n")
 
     print("Building inverted index...")
     user_to_videos = build_inverted_index(video_to_commenters)
@@ -36,11 +35,8 @@ def make_video_graphs(links: str, commentCount: int):
 
     # video_ids_full = add_video_metadata(video_ids)
     userMetadata = add_user_metadata(user_to_videos)
-
-    # return JSONResponse(content={"videos": videoMetadata["videos"], "users": userMetadata}, status_code=200)
-    #  userMetadata is a hashMap. Dont need the keys. Remove keys, return just values(turn to a set)
-    #  videoMetadata is a list of video objects.
     userMetadata = list(userMetadata.values())
+
     graph_json = build_graph_json(videoMetadata["videos"], userMetadata)
     return JSONResponse(content=graph_json)
 
@@ -92,6 +88,7 @@ def check_video_ids(video_ids: list[str]) -> dict:
         return {"videos": video_metadata}
     except Exception as e:
         print(f"Error validating video IDs: {e}")
+        return {"error": f"Error validating video IDs: {e}"}
         # invalid_ids.extend(video_ids)  # Mark all as invalid if an error occurs
 
     # return {"valid": valid_ids, "invalid": invalid_ids}
