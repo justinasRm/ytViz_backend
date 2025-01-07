@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from read_csv import read_data
 from build_json import build_graph_json
 from make_video_graphs import make_video_graphs
+from firestore_utils import getAPIQuota
 
 app = FastAPI()
 app.add_middleware(
@@ -15,17 +16,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-# @app.get("/graph")
-# def get_graph_data():
-#      # for testing data is pre generated. Maybe there will be 5 presets of data that user can choose from, or input their own videos.
-
-#     # 1. Read data from CSV files
-#     video_ids, user_to_videos = read_data()
-
-#     # 2. Build the JSON structure for the graph
-#     graph_json = build_graph_json(video_ids, user_to_videos)
-#     # 3. Return as JSON
-#     return JSONResponse(content=graph_json)
 
 @app.get("/default-graphs")
 def get_default_graphs(graph_num: int = Query(..., description="# of graph to retrieve")):
@@ -44,6 +34,14 @@ def func(links: str = Query(..., description="youtube video links"), commentCoun
         if 'raised_error_text:' in str(e):
             return JSONResponse(content={"error": str(e).split('raised_error_text:')[1]}, status_code=400)
         return JSONResponse(content={"error": "An error occurred. Please try again."}, status_code=400)
+
+@app.get("/get-api-quota")
+def get_api_quota():
+    '''
+    Get data from Firestore.
+    '''
+    rtrn = getAPIQuota()
+    return JSONResponse(content={"quota": rtrn})
 
 if __name__ == "__main__":
     uvicorn.run("main:app", reload=True)

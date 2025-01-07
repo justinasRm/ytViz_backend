@@ -2,13 +2,13 @@ from config import get_youtube_client
 from fastapi.responses import JSONResponse
 from fetching import fetch_comments_for_videos, get_youtube_client, build_inverted_index, add_user_metadata
 from build_json import build_graph_json
-from pprint import pprint
+import math
+from firestore_utils import getAPIQuota, updateAPIQuota
 
 def make_video_graphs(links: str, commentCount: int):
     error = ''
     # example 'links':  https://www.youtube.com/watch?v=4H4sScCB1cY,https://www.youtube.com/watch?v=8tDOeQqnrYQ
     idsList = []
-    print('commentCount: ', commentCount)
     for link in links.split(','):
         if '=' not in link or 'https://www.youtube.com/watch?v=' not in link or len(link.split('=')[1]) != 11:
             error = "Couldn't find video id in the link: " + link + ".\nMake sure the link is in the format: https://www.youtube.com/watch?v={11_CHARACTER_VIDEO_ID}"
@@ -17,10 +17,17 @@ def make_video_graphs(links: str, commentCount: int):
         idsList.append(id)
 
     # idsList = ['4H4sScCB1cY', '8tDOeQqnrYQ', ...]
+    if len(idsList) > 5:
+        error = "You can only fetch comments for up to 5 videos at a time."
+        return JSONResponse(content={"error": error}, status_code=400)
+        
+    # will be updating quota during this function, and putting it in firebase at the end
+    quotaUsage = 0
 
+    # Up to 5 videos, 
     videoMetadata = check_video_ids(idsList)
-    print(videoMetadata)
-    print('videoMetadata')
+    quotaUsage += 1
+
     if 'error' in videoMetadata:
         return JSONResponse(content=videoMetadata, status_code=400)
     
@@ -28,16 +35,21 @@ def make_video_graphs(links: str, commentCount: int):
 
     print("Starting comment fetch...")
     video_to_commenters = fetch_comments_for_videos(idsList, commentCount)
-
+    for vid in video_to_commenters:
+        quotaUsage += math.ceil(len(video_to_commenters[vid]) / 100)
     print("Building inverted index...")
     user_to_videos = build_inverted_index(video_to_commenters)
     print(f"Found {len(user_to_videos)} unique users.\n")
+    quotaUsage += math.ceil(len(user_to_videos) / 50)
 
     # video_ids_full = add_video_metadata(video_ids)
     userMetadata = add_user_metadata(user_to_videos)
     userMetadata = list(userMetadata.values())
 
     graph_json = build_graph_json(videoMetadata["videos"], userMetadata)
+    print('QUOTA USAGE final:', quotaUsage)
+
+    updateAPIQuota(quotaUsage)
     return JSONResponse(content=graph_json)
 
 

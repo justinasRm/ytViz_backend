@@ -187,7 +187,7 @@ def batch(iterable, size):
 
 def add_user_metadata(user_to_videos):
     """
-    Add user metadata to the user_to_videos dict in batches (100 users per batch).
+    Add user metadata to the user_to_videos dict in batches (50 users per batch).
     """
     youtube = get_youtube_client()
     user_to_videos_full = {}
