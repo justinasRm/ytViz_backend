@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 from fetching import fetch_comments_for_videos, get_youtube_client, build_inverted_index, add_user_metadata
 from build_json import build_graph_json
 import math
-from firestore_utils import getAPIQuota, updateAPIQuota
+from firestore_utils import getAPIQuota, updateAPIQuota, setAPIQuotaMAX
 
 def make_video_graphs(links: str, commentCount: int):
     error = ''
@@ -23,12 +23,14 @@ def make_video_graphs(links: str, commentCount: int):
         
     # will be updating quota during this function, and putting it in firebase at the end
     quotaUsage = 0
-
     # Up to 5 videos, 
     videoMetadata = check_video_ids(idsList)
     quotaUsage += 1
 
     if 'error' in videoMetadata:
+        if "quotaExceeded" in videoMetadata['error']:
+            setAPIQuotaMAX()
+            return JSONResponse(content={"error": "The daily API quota usage has been exceeded. Please try generating graphs from custom links again tomorrow."}, status_code=429)
         return JSONResponse(content=videoMetadata, status_code=400)
     
     # now getting comments for each video

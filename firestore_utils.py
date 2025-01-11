@@ -40,3 +40,20 @@ def updateAPIQuota(add: int):
         })
 
     return {"message": "Data updated successfully."}
+
+def setAPIQuotaMAX():
+    currentDay = f'{datetime.now().year}-{datetime.now().month}-{datetime.now().day}'
+    
+    doc_ref = db.collection('APIQuota').document(currentDay)
+    doc_snapshot = doc_ref.get()
+
+    if doc_snapshot.exists:
+        doc_ref.update({
+            'quotaUsed': 10000
+        })
+    else:
+        doc_ref.set({
+            'quotaUsed': 10000
+        })
+
+    return {"message": "Data updated successfully."}
