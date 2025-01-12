@@ -29,6 +29,7 @@ def fetch_comments_for_videos(video_ids: list[str], commentCount: int = 500) -> 
       }
     """
     youtube = get_youtube_client()
+    commentCount = 500
     video_to_commenters = {}
 
     for vid in video_ids:
